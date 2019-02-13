@@ -56,34 +56,38 @@ def inchi_from_pubchem(identifier):
     if not 'InChI' in inchi:
         return False
     return inchi
+    
 
 
 # Main function. Return a DataFrame with found structures
 def add_inchis(frame):
-    names = []
-    CAS = []
-    drugbank = []
+    names = False
+    CAS = False
+    drugbank = False
     inchis = []
     if 'name' in frame.columns:
         names = frame['name']
-
     if 'CAS' in frame.columns:
         CAS = frame['CAS']
-
     if 'DrugbankID' in frame.columns:
         drugbank = frame['DrugbankID']
     
     for i in range(len(frame)):
+        print('Molecule: ' + str(i))
         inchi = False
         if len(CAS) > 0:
+            'Trying CAS'
             inchi = inchi_from_cactus(CAS[i])
-        if not inchi and len(names) > 0:
+        if not inchi  and len(names) > 0:
+            print('Trying name')
             inchi = inchi_from_cactus(names[i])
             if not inchi:
                 inchi = inchi_from_pubchem(names[i])
         if not inchi and len(drugbank) > 0:
+            print('Trying drugbank')
             inchi = inchi_from_drugbank(drugbank[i])
         print(inchi)
+        print(f'Molecule {str(i)} finished.\n')
         inchis.append(inchi)
         
     frame['InChI'] = inchis
