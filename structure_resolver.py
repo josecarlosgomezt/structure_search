@@ -19,10 +19,10 @@ def inchi_from_cactus(identifier):
         return False
     if "Bad" in str(response.data):
         return False
-    if "found" in str(rlesponse.data):
+    if "found" in str(response.data):
         return False
     inchi = str(response.data.decode("UTF-8"))
-    if not 'InChI' in inchi:
+    if 'InChI' not in inchi:
         return False
     return inchi
 
@@ -31,7 +31,7 @@ def inchi_from_cactus(identifier):
 def inchi_from_drugbank(identifier):
 
     url = (f'https://www.drugbank.ca/structures/small_molecule_drugs/'
-           f'{identifier}.inchi') 
+           f'{identifier}.inchi')
     try:
         response = http.request('GET', url)
     except:
