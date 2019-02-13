@@ -42,7 +42,7 @@ def inchi_from_drugbank(identifier):
     if "found" in str(response.data):
         return False
     inchi = str(response.data.decode("UTF-8"))
-    if not 'InChI' in inchi:
+    if 'InChI' not in inchi:
         return False
     return inchi
 
@@ -72,7 +72,7 @@ def add_inchis(frame):
 
     if 'DrugbankID' in frame.columns:
         drugbank = frame['DrugbankID']
-    
+ 
     for i in range(len(frame)):
         inchi = False
         if len(CAS) > 0:
@@ -83,10 +83,6 @@ def add_inchis(frame):
                 inchi = inchi_from_pubchem(names[i])
         if not inchi and len(drugbank) > 0:
             inchi = inchi_from_drugbank(drugbank[i])
-        print(inchi)
         inchis.append(inchi)
-        
     frame['InChI'] = inchis
     return frame
-
-        
