@@ -213,3 +213,145 @@ def add_inchis(frame, name = None, CASRN = None, DBID= None):
     frame['InChI'] = inchis
     return frame
 
+
+def add_inchis(frame, name = None, CASRN = None, DBID= None):
+
+    '''
+    
+    Info
+    ----
+
+    Main Function to add InChI column to pandas dataframe from name, CASRN,
+    smiles or DrugBank ID provided. This function calls other functions:
+    - inchi_from_pubchem()
+    - inchi_from_drugbank()
+    - inchi_from_cactus()
+    
+    Parameters
+    ----------
+    
+    frame: pd.DataFrame  
+        Dataframe containing whole information(compound name or a CAS Registry number or smile)
+    name: str
+        Compound name or smile column
+    CASRN: str
+        CAS registry number
+    DBID: str
+        Drug Bank ID
+           
+    Returns
+    -------
+    
+    frame: pd.DataFrame
+        Dataframe with an inchi column. It will appear False if there is no inchi.
+    
+    Example
+    -------        
+    
+    frame = add_inchis(frame)
+    checking not found structures: frame[frame['InChI']==False]
+    
+    '''
+       
+    if name is not  None:
+        names = frame[name]
+    else:
+        names = []
+    
+    if CASRN is not None:
+        CAS = frame[CASRN]
+    else:
+        CAS = []
+    
+    if DBID is not None:
+        drugbank = frame[DBID]
+    else:
+        drugbank = []
+        
+    inchis = []
+ 
+    for i in range(len(frame)):
+        inchi = False
+        if len(drugbank) > 0:
+            inchi = inchi_from_drugbank(drugbank[i])
+        if not inchi and len(CAS) > 0:
+            inchi = inchi_from_cactus(CAS[i])
+        if not inchi and len(names) > 0:
+            inchi = inchi_from_cactus(names[i])
+            if not inchi:
+                inchi = inchi_from_pubchem(names[i])
+        inchis.append(inchi)
+    frame['InChI'] = inchis
+    return frame
+
+
+def add_inchis(frame, name = None, CASRN = None, DBID= None):
+
+    '''
+    
+    Info
+    ----
+
+    Main Function to add InChI column to pandas dataframe from name, CASRN,
+    smiles or DrugBank ID provided. This function calls other functions:
+    - inchi_from_pubchem()
+    - inchi_from_drugbank()
+    - inchi_from_cactus()
+    
+    Parameters
+    ----------
+    
+    frame: pd.DataFrame  
+        Dataframe containing whole information(compound name or a CAS Registry number or smile)
+    name: str
+        Compound name or smile column
+    CASRN: str
+        CAS registry number
+    DBID: str
+        Drug Bank ID
+           
+    Returns
+    -------
+    
+    frame: pd.DataFrame
+        Dataframe with an inchi column. It will appear False if there is no inchi.
+    
+    Example
+    -------        
+    
+    frame = add_inchis(frame)
+    checking not found structures: frame[frame['InChI']==False]
+    
+    '''
+       
+    if name is not  None:
+        names = frame[name]
+    else:
+        names = []
+    
+    if CASRN is not None:
+        CAS = frame[CASRN]
+    else:
+        CAS = []
+    
+    if DBID is not None:
+        drugbank = frame[DBID]
+    else:
+        drugbank = []
+        
+    inchis = []
+ 
+    for i in range(len(frame)):
+        inchi = False
+        if len(drugbank) > 0:
+            inchi = inchi_from_drugbank(drugbank[i])
+        if not inchi and len(CAS) > 0:
+            inchi = inchi_from_cactus(CAS[i])
+        if not inchi and len(names) > 0:
+            inchi = inchi_from_cactus(names[i])
+            if not inchi:
+                inchi = inchi_from_pubchem(names[i])
+        inchis.append(inchi)
+    frame['InChI'] = inchis
+    return frame
+
