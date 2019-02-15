@@ -3,16 +3,46 @@ import pandas as pd
 import urllib3
 
 
-
-# Initialize urllib3
 http = urllib3.PoolManager()
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-# Get Inchi from cactus
+
 def inchi_from_cactus(identifier):
-    url = (f'https://cactus.nci.nih.gov/chemical/structure/{identifier}/inchi')
+
+    '''
     
+    Info
+    ----
+
+    Function to get InChIs from CASRN or name or smile using cactus web service
+    
+    Parameters
+    ----------
+    
+    identifier: str  
+        String that can be a compound name or a CAS Registry number or smile
+       
+    Returns
+    -------
+    
+    str
+        InChI
+    
+    Example
+    -------        
+
+    inchi = InChi_from_cactus('c1ccccc1')
+         
+    '''
+    
+    if str(identifier) == 'nan':
+        identifier = 'error'
+    else:
+        identifier = identifier
+    
+    url = (f'https://cactus.nci.nih.gov/chemical/structure/{identifier}/inchi')
+
     try:
         response = http.request('GET', url)
     except:
@@ -22,16 +52,42 @@ def inchi_from_cactus(identifier):
     if "found" in str(response.data):
         return False
     inchi = str(response.data.decode("UTF-8"))
-    if 'InChI' not in inchi:
+    if not 'InChI' in inchi:
         return False
     return inchi
 
 
-# Get Inchi from drugbankID
+
 def inchi_from_drugbank(identifier):
 
+    '''
+    
+    Info
+    ----
+
+    Function to get InChIs from Drug Bank ID using drugbank webservice
+    
+    Parameters
+    ----------
+    
+    identifier: str  
+        Drug Bank ID
+       
+    Returns
+    -------
+    
+    str
+        InChI
+    
+    Example
+    -------        
+
+    inchi = inchi_from_drugbank('DB11558')
+         
+    '''
+
     url = (f'https://www.drugbank.ca/structures/small_molecule_drugs/'
-           f'{identifier}.inchi')
+           f'{identifier}.inchi') 
     try:
         response = http.request('GET', url)
     except:
@@ -42,12 +98,40 @@ def inchi_from_drugbank(identifier):
     if "found" in str(response.data):
         return False
     inchi = str(response.data.decode("UTF-8"))
-    if 'InChI' not in inchi:
+    if not 'InChI' in inchi:
         return False
     return inchi
 
-# Get Inchi from pubchempy
+
 def inchi_from_pubchem(identifier):
+    
+    '''
+    
+    Info
+    ----
+
+    Function to get InChIs from CASRN or name or smile using pubchem web service
+    To use this function, one needs to install this : pip install pubchempy
+    
+    Parameters
+    ----------
+    
+    identifier: str  
+        String that can be a compound name or a CAS Registry number or smile
+       
+    Returns
+    -------
+    
+    str
+        InChI
+    
+    Example
+    -------        
+
+    inchi = inchi_from_pubchem('toluene')
+         
+    '''   
+
     try:
         comp =  pbc.get_compounds(identifier, namespace='name')
         inchi = comp[0].inchi
@@ -56,22 +140,64 @@ def inchi_from_pubchem(identifier):
     if not 'InChI' in inchi:
         return False
     return inchi
+    
 
 
-# Main function. Return a DataFrame with found structures
-def add_inchis(frame):
-    names = []
-    CAS = []
-    drugbank = []
+def add_inchis(frame, name = None, CASRN = None, DBID= None):
+
+    '''
+    
+    Info
+    ----
+
+    Main Function to add InChI column to pandas dataframe from name, CASRN,
+    smiles or DrugBank ID provided. This function calls other functions:
+    - inchi_from_pubchem()
+    - inchi_from_drugbank()
+    - inchi_from_cactus()
+    
+    Parameters
+    ----------
+    
+    frame: pd.DataFrame  
+        Dataframe containing whole information(compound name or a CAS Registry number or smile)
+    name: str
+        Compound name or smile column
+    CASRN: str
+        CAS registry number
+    DBID: str
+        Drug Bank ID
+           
+    Returns
+    -------
+    
+    frame: pd.DataFrame
+        Dataframe with an inchi column. It will appear False if there is no inchi.
+    
+    Example
+    -------        
+    
+    frame = add_inchis(frame)
+    checking not found structures: frame[frame['InChI']==False]
+    
+    '''
+       
+    if name != None:
+        names = frame[name]
+    else:
+        names = []
+    
+    if CASRN != None:
+        CAS = frame[CASRN]
+    else:
+        CAS = []
+    
+    if DBID != None:
+        drugbank = frame[DBID]
+    else:
+        drugbank = []
+        
     inchis = []
-    if 'name' in frame.columns:
-        names = frame['name']
-
-    if 'CAS' in frame.columns:
-        CAS = frame['CAS']
-
-    if 'DrugbankID' in frame.columns:
-        drugbank = frame['DrugbankID']
  
     for i in range(len(frame)):
         inchi = False
@@ -86,3 +212,5 @@ def add_inchis(frame):
         inchis.append(inchi)
     frame['InChI'] = inchis
     return frame
+    
+
