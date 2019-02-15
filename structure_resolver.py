@@ -182,17 +182,17 @@ def add_inchis(frame, name = None, CASRN = None, DBID= None):
     
     '''
        
-    if name != None:
+    if name is not  None:
         names = frame[name]
     else:
         names = []
     
-    if CASRN != None:
+    if CASRN is not None:
         CAS = frame[CASRN]
     else:
         CAS = []
     
-    if DBID != None:
+    if DBID is not None:
         drugbank = frame[DBID]
     else:
         drugbank = []
@@ -201,16 +201,15 @@ def add_inchis(frame, name = None, CASRN = None, DBID= None):
  
     for i in range(len(frame)):
         inchi = False
-        if len(CAS) > 0:
+        if len(drugbank) > 0:
+            inchi = inchi_from_drugbank(drugbank[i])
+        if not inchi and len(CAS) > 0:
             inchi = inchi_from_cactus(CAS[i])
         if not inchi and len(names) > 0:
             inchi = inchi_from_cactus(names[i])
             if not inchi:
                 inchi = inchi_from_pubchem(names[i])
-        if not inchi and len(drugbank) > 0:
-            inchi = inchi_from_drugbank(drugbank[i])
         inchis.append(inchi)
     frame['InChI'] = inchis
     return frame
-    
 
