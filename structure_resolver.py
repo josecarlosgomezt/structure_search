@@ -212,3 +212,5 @@ def add_inchis(frame, name = None, CASRN = None, DBID= None):
         inchis.append(inchi)
     frame['InChI'] = inchis
     return frame
+
+    "wwww"
