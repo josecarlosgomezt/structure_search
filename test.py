@@ -13,4 +13,9 @@ import urllib3
 
 def test_structure_retrieval():
     """test compound retrieval"""
-    assert 1 == 1
+
+    frame = pd.read_csv("test_data2", sep="\t")
+    frame = add_inchis(frame, name='name', CASRN='CAS',
+                        DBID='DrugbankID')
+    print(frame.shape)
+    assert len(frame) > 10
