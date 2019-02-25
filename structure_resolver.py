@@ -44,7 +44,7 @@ def inchi_from_cactus(identifier):
     url = (f'https://cactus.nci.nih.gov/chemical/structure/{identifier}/inchi')
 
     try:
-        response = http.request('GET', url)
+        response = http.request('GET', url, timeout=5, retries=2)
     except:
         return False
     if "Bad" in str(response.data):
@@ -53,7 +53,13 @@ def inchi_from_cactus(identifier):
         return False
     inchi = str(response.data.decode("UTF-8"))
     if not 'InChI' in inchi:
-        return False
+        if 'acid' in identifier.split(" "):
+            identifier = identifier.split(" ")[0]
+            inchi = inchi_from_cactus(identifier)
+        if 'InChI' in inchi:
+            return inchi
+        else:
+            return False
     return inchi
 
 
