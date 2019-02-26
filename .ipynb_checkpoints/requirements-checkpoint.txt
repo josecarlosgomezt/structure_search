@@ -1,3 +1,0 @@
-pubchempy
-pandas
-urllib3
