@@ -1,3 +1,4 @@
 pubchempy
 pandas
 urllib3
+tqdm

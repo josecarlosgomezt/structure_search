@@ -1,7 +1,7 @@
 import pubchempy as pbc
 import pandas as pd
 import urllib3
-
+from tqdm import tqdm
 
 http = urllib3.PoolManager()
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -205,7 +205,7 @@ def add_inchis(frame, name = None, CASRN = None, DBID= None):
         
     inchis = []
  
-    for i in range(len(frame)):
+    for i in tqdm(range(len(frame))):
         inchi = False
         if len(drugbank) > 0:
             inchi = inchi_from_drugbank(drugbank[i])
