@@ -11,11 +11,15 @@ import urllib3
 #csv = Path("test_data/test_data.csv")
 
 
-def test_structure_retrieval():
+def structure_retrieval():
     """test compound retrieval"""
 
-    frame = pd.read_csv("test_data2", sep="\t")
+    frame = pd.read_csv("./test_data/test_data2.csv", sep="\t")
     frame = add_inchis(frame, name='name', CASRN='CAS',
                         DBID='DrugbankID')
     print(frame.shape)
-    assert len(frame) > 10
+    return(len(frame))
+
+
+def test_number():
+    assert structure_retrieval() > 10
