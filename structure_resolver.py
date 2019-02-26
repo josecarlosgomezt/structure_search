@@ -149,7 +149,7 @@ def inchi_from_pubchem(identifier):
     
 
 
-def add_inchis(frame, name = None, CASRN = None, DBID= None):
+def add_inchis(frame, name=None, CASRN=None, DBID=None):
 
     '''
     
@@ -183,22 +183,22 @@ def add_inchis(frame, name = None, CASRN = None, DBID= None):
     Example
     -------        
     
-    frame = add_inchis(frame)
+    frame = add_inchis(frame, CASRN = 'CASN')
     checking not found structures: frame[frame['InChI']==False]
     
     '''
        
-    if name is not  None:
+    if name != None:
         names = frame[name]
     else:
         names = []
     
-    if CASRN is not None:
+    if CASRN != None:
         CAS = frame[CASRN]
     else:
         CAS = []
     
-    if DBID is not None:
+    if DBID != None:
         drugbank = frame[DBID]
     else:
         drugbank = []
@@ -208,13 +208,25 @@ def add_inchis(frame, name = None, CASRN = None, DBID= None):
     for i in tqdm(range(len(frame))):
         inchi = False
         if len(drugbank) > 0:
-            inchi = inchi_from_drugbank(drugbank[i])
+            try:
+                inchi = inchi_from_drugbank(drugbank[i])
+            except:
+                inchi = False
         if not inchi and len(CAS) > 0:
-            inchi = inchi_from_cactus(CAS[i])
+            try:
+                inchi = inchi_from_cactus(CAS[i])
+            except:
+                inchi = False
         if not inchi and len(names) > 0:
-            inchi = inchi_from_cactus(names[i])
-            if not inchi:
-                inchi = inchi_from_pubchem(names[i])
+            try:
+                inchi = inchi_from_cactus(names[i])
+            except:
+                inchi = False
+                if not inchi:
+                    try:
+                        inchi = inchi_from_pubchem(names[i])
+                    except:
+                        inchi = False
         inchis.append(inchi)
     frame['InChI'] = inchis
     return frame
