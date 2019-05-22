@@ -189,17 +189,17 @@ def add_inchis(frame, name=None, CASRN=None, DBID=None):
     '''
        
     if name != None:
-        names = frame[name]
+        names = frame[name].tolist()
     else:
         names = []
     
     if CASRN != None:
-        CAS = frame[CASRN]
+        CAS = frame[CASRN].tolist()
     else:
         CAS = []
     
     if DBID != None:
-        drugbank = frame[DBID]
+        drugbank = frame[DBID].tolist()
     else:
         drugbank = []
         
